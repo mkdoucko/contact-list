@@ -1,0 +1,62 @@
+1)
+Needed to download the org.eclipse.persistene.moxy.jar https://mega.nz/#!Ck0lVSRA!_KIjTl_8scQrak7jNTBepv3oqSKgeYsAVqjlvAarTbU and replace it with glassfish/modules/org.eclipse.persistene.moxy.jar
+
+see: http://ayudasdesarrollo.blogspot.sk/2016/05/glassfish-441-falla-con-jax-rs-y-json.html
+see: https://java.net/jira/browse/JERSEY-2888
+
+2)
+Download several libraries:
+
+- jackson-annotations-2.5.1.jar
+- jackson-core-2.5.1.jar
+- jackson-databind-2.5.1.jar
+- jackson-jaxrs-base-2.5.1.jar
+- jackson-jaxrs-json-provider-2.5.1.jar
+- jackson-module-jaxb-annotations-2.5.1.jar
+
+With Maven: 
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-base</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+
+Move them to glassfish/modules
+Rename them so that they don't contain 2.5.1 version (see the names of the original libraries that reside in the directory).
+Remove OSGI cache: rm glassfish/domains/domain1/osgi-cache/felix -R
+
+see: https://java.net/jira/browse/GLASSFISH-21141
+
+3)
+Create a Connection Pool
+
+asadmin create-jdbc-connection-pool --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --restype javax.sql.ConnectionPoolDataSource --property portNumber=5432:password=password:user=postgres:serverName=localhost:databaseName=contactlist:connectionAttributes=\;create\\=true ContactListPool
+
+4)
+Create a JDBC Resource
+asadmin create-jdbc-resource --connectionpoolid ContactListPool jdbc/contactlist
